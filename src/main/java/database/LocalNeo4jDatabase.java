@@ -8,8 +8,6 @@ import org.neo4j.graphalgo.*;
 import org.neo4j.graphdb.*;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
 
@@ -18,7 +16,7 @@ import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAM
 public class LocalNeo4jDatabase {
 
 
-
+        private DatabaseManagementService managementService;
         public static void main(String[] args) {
 
 
@@ -44,10 +42,7 @@ public class LocalNeo4jDatabase {
             }
 
             // If the directory doesn't exist, create the DatabaseManagementService
-            DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(dataDirectory.toPath())
-                    .setConfig(GraphDatabaseSettings.transaction_timeout, Duration.ofSeconds(60))
-                    .setConfig(GraphDatabaseSettings.preallocate_logical_logs, true)
-                    .build();
+            this.managementService = DatabaseManager.getManagementService(dataDirectory);
 
             GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
 
@@ -133,7 +128,6 @@ public class LocalNeo4jDatabase {
                 }
                 transaction.commit();
                 transaction.terminate();
-                managementService.shutdown();
 
 
             }catch (Exception e) {
@@ -144,7 +138,7 @@ public class LocalNeo4jDatabase {
 
 
         }
-        public void lookup(ServletContext servletContext){
+        public void findCheapestPath(ServletContext servletContext , String startNodeName,String endNodeName){
 
 
             // Define the relative path to the data directory inside resources
@@ -159,17 +153,18 @@ public class LocalNeo4jDatabase {
             }
 
             File dataDirectory = new File(directoryPath);
-            DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(dataDirectory.toPath())
-                    .setConfig(GraphDatabaseSettings.transaction_timeout, Duration.ofSeconds(60))
-                    .setConfig(GraphDatabaseSettings.preallocate_logical_logs, true)
-                    .build();
+
+            this.managementService = DatabaseManager.getManagementService(dataDirectory);
 
             GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
 
 
             Transaction transaction = graphDb.beginTx();
-            String startNodeName = "ARC";
-            String endNodeName = "SOL";
+
+
+
+            //check that nodes exist
+
             Node nodeA = findNodeByName(transaction, startNodeName);
             Node nodeB = findNodeByName(transaction, endNodeName);
 
@@ -186,9 +181,8 @@ public class LocalNeo4jDatabase {
                 System.out.println(nodeName);
             }
             System.out.println(path.weight());
-            transaction.terminate();
-            managementService.shutdown();
 
+            transaction.close();
         }
         private static Node createNodeWithLabelAndProperties(Transaction transaction, String label, String propertyKey, String propertyValue) {
             Node node = transaction.createNode(Label.label(label));

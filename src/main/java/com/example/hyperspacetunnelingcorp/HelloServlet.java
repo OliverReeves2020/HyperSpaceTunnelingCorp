@@ -21,11 +21,7 @@ public class HelloServlet extends HttpServlet {
 
         LocalNeo4jDatabase db= new LocalNeo4jDatabase();
         ServletContext context = getServletContext();
-        // Get the real path of the secure directory within WEB-INF
-        String secureDirPath = context.getRealPath("/WEB-INF/data");
-
-        db.startup(context);
-        //db.lookup(secureDirPath);
+        db.lookup(context);
         // Hello
         PrintWriter out = response.getWriter();
         out.println("<html><body>");

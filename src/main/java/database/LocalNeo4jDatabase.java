@@ -144,16 +144,30 @@ public class LocalNeo4jDatabase {
 
 
         }
-        public void lookup(String FilePath){
+        public void lookup(ServletContext servletContext){
 
 
-            DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(new File(FilePath).toPath())
+            // Define the relative path to the data directory inside resources
+            String resourcePath = "/data/Solar";
+
+            // Get the real path to the resource directory on the server
+            String directoryPath = servletContext.getRealPath(resourcePath);
+
+            if (directoryPath == null) {
+                // Handle the case where the resource directory is not found
+                throw new RuntimeException("Resource directory not found: " + resourcePath);
+            }
+
+            File dataDirectory = new File(directoryPath);
+            DatabaseManagementService managementService = new DatabaseManagementServiceBuilder(dataDirectory.toPath())
                     .setConfig(GraphDatabaseSettings.transaction_timeout, Duration.ofSeconds(60))
-                    .setConfig(GraphDatabaseSettings.preallocate_logical_logs, true).build();
+                    .setConfig(GraphDatabaseSettings.preallocate_logical_logs, true)
+                    .build();
+
             GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
 
-            Transaction transaction = graphDb.beginTx();
 
+            Transaction transaction = graphDb.beginTx();
             String startNodeName = "ARC";
             String endNodeName = "SOL";
             Node nodeA = findNodeByName(transaction, startNodeName);
@@ -172,6 +186,8 @@ public class LocalNeo4jDatabase {
                 System.out.println(nodeName);
             }
             System.out.println(path.weight());
+            transaction.terminate();
+            managementService.shutdown();
 
         }
         private static Node createNodeWithLabelAndProperties(Transaction transaction, String label, String propertyKey, String propertyValue) {

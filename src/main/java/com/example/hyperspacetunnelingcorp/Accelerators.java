@@ -22,19 +22,49 @@ public class Accelerators extends HttpServlet {
 
 
 
-        // Get the request path using the getContextPath() and getServletPath() methods
-        String contextPath = request.getContextPath();
-        String servletPath = request.getServletPath();
-        String requestPath = request.getRequestURI().substring(contextPath.length() + servletPath.length());
-
+        // Get the request path
+        String requestPath = request.getPathInfo();
+        //split into diffrent paths
+        System.out.println(requestPath);
         // `/accelerators` - returns a list of accelerators with their information
-        if(requestPath.equals("")){
+        if(requestPath==null){
             System.out.println("null");
 
             return;
         }
 
+        String[] parts = requestPath.substring(1).split("/");
+
         //* `GET`: `/accelerators/{acceleratorID}` - returns the details of a single accelerator
+
+
+
+        //* `GET`: `/accelerators/{acceleratorID}/to/{targetAcceleratorID}` - returns the cheapest route from `acceleratorID` to `targetAcceleratorID`
+        if(parts.length==3&&parts[1].equals("to")){
+            String startAccelerator = parts[0].toString();
+            String endAccelerator = parts[2].toString();
+            LocalNeo4jDatabase db= new LocalNeo4jDatabase();
+            ServletContext context = getServletContext();
+
+
+           if(db.validNodeByName(context,startAccelerator)&& db.validNodeByName(context,endAccelerator)){
+
+
+
+           }else{
+               response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parmaters provided in the path.");
+               return;
+           }
+
+
+
+        }
+
+
+
+
+
+
 
 
 
@@ -43,11 +73,7 @@ public class Accelerators extends HttpServlet {
         LocalNeo4jDatabase db= new LocalNeo4jDatabase();
         ServletContext context = getServletContext();
         db.findCheapestPath(context,"ARC","SOL");
-        // Hello
-        PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>" + message + "</h1>");
-        out.println("</body></html>");
+
     }
 
     public void destroy() {

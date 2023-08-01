@@ -8,6 +8,8 @@ import org.neo4j.dbms.api.DatabaseManagementService;
 
 import java.io.File;
 
+import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
+
 public class ServerStart implements ServletContextListener {
 
     private DatabaseManagementService managementService;
@@ -31,9 +33,10 @@ public class ServerStart implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent event) {
         // Cleanup code here
+        managementService.shutdown();
+
         System.out.println("Web application destroyed.");
 
-        managementService.shutdown();
 
     }
 }

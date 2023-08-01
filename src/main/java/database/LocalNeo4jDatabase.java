@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
+import static org.neo4j.configuration.GraphDatabaseSettings.transaction_monitor_check_interval;
 
 public class LocalNeo4jDatabase {
 
@@ -138,6 +139,8 @@ public class LocalNeo4jDatabase {
 
 
         }
+
+
         public void findCheapestPath(ServletContext servletContext , String startNodeName,String endNodeName){
 
 
@@ -172,6 +175,7 @@ public class LocalNeo4jDatabase {
                     PathExpanders.forTypeAndDirection( RelationshipType.withName("distance"), Direction.OUTGOING), "distance" );
 
             WeightedPath path = finder.findSinglePath( nodeA, nodeB );
+
             // Get the weight for the found path
             for (Node node : path.nodes()) {
                 String nodeName = (String) node.getProperty("name");
@@ -199,13 +203,42 @@ public class LocalNeo4jDatabase {
 
 
 
-    private static Node findNodeByName(Transaction transaction, String nodeName) {
+    public static Node findNodeByName(Transaction transaction, String nodeName) {
         Result result = transaction.execute("MATCH (n {name: $nodeName}) RETURN n", Map.of("nodeName", nodeName));
         if (result.hasNext()) {
             Map<String, Object> row = result.next();
+
             return (Node) row.get("n");
         }
         return null;
+    }
+    public boolean validNodeByName(ServletContext servletContext, String nodeName) {
+
+        // Define the relative path to the data directory inside resources
+        String resourcePath = "/data/Solar";
+
+        // Get the real path to the resource directory on the server
+        String directoryPath = servletContext.getRealPath(resourcePath);
+
+        if (directoryPath == null) {
+            // Handle the case where the resource directory is not found
+            throw new RuntimeException("Resource directory not found: " + resourcePath);
+        }
+
+        File dataDirectory = new File(directoryPath);
+
+        this.managementService = DatabaseManager.getManagementService(dataDirectory);
+
+        GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
+
+        //memory leak caused by transaction needs to be looked into
+        Transaction transaction = graphDb.beginTx();
+        Result result = transaction.execute("MATCH (n {name: $nodeName}) RETURN n", Map.of("nodeName", nodeName));
+
+        boolean nodeFound = result.hasNext();
+        transaction.terminate(); // Close the transaction before returning.
+
+        return nodeFound;
     }
 
     }

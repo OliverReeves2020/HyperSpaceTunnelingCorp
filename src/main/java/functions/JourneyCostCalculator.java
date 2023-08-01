@@ -10,8 +10,7 @@ public class JourneyCostCalculator {
 
         int peoplePerShip = 4;
         int numberOfShips = (int) Math.ceil((double) numberOfPeople / peoplePerShip);
-
-        return (fuelCost + storageCost) * numberOfShips;
+        return (fuelCost + (storageCost* numberOfShips));
     }
 
     public static double calculateHTCTransportCost(double distance, int numberOfPeople) {

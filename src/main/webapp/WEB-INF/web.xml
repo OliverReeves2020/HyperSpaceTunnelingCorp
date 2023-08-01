@@ -10,7 +10,10 @@
         <listener-class>listeners.ServerStart</listener-class>
     </listener>
 
-
+    <servlet-mapping>
+        <servlet-name>transport</servlet-name>
+        <url-pattern>/transport/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>accelerators</servlet-name>

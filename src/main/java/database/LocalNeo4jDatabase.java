@@ -1,20 +1,19 @@
 package database;
 
 import jakarta.servlet.ServletContext;
-import org.neo4j.configuration.GraphDatabaseSettings;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.neo4j.dbms.api.DatabaseManagementService;
-import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphalgo.*;
 import org.neo4j.graphdb.*;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
-import static org.neo4j.configuration.GraphDatabaseSettings.transaction_monitor_check_interval;
 
 public class LocalNeo4jDatabase {
 
@@ -216,9 +215,9 @@ public class LocalNeo4jDatabase {
         return null;
     }
 
-    public void allNodes(ServletContext servletContext){
+    public String allNodes(ServletContext servletContext){
         // Define the label you want to query
-        Label labelX = Label.label("X");
+        Label labelX = Label.label("Accelerator");
 
 // Create a list to store the nodes with label "X"
         List<Node> nodesWithLabelX = new ArrayList<>();
@@ -243,31 +242,39 @@ public class LocalNeo4jDatabase {
             // Find all nodes with the specified label
             ResourceIterator<Node> nodeIterator = transaction.findNodes(labelX);
 
+            // Create a JSON array to store the nodes
+            JSONArray nodesJsonArray = new JSONArray();
+
             // Add the nodes to the list
             while (nodeIterator.hasNext()) {
                 Node node = nodeIterator.next();
                 nodesWithLabelX.add(node);
+
+                // Create a JSON object for each node and add its properties
+                JSONObject nodeJson = new JSONObject();
+                nodeJson.put("ID", node.getProperty("name").toString());
+                nodeJson.put("alias", node.getProperty("alias").toString());
+
+                // Add the node JSON object to the JSON array
+                nodesJsonArray.put(nodeJson);
             }
 
-            // Make sure to close the iterator
+            //close the iterator
             nodeIterator.close();
 
-            // Process the nodes or return the list as needed
-            // For example, you can iterate through the list and perform actions on each node:
-            for (Node node : nodesWithLabelX) {
-                String nodeName = node.getProperty("name").toString();
-                // Access other properties or perform actions with the node as needed
-                // ...
-                System.out.println("Node with label 'X' and name '" + nodeName + "' found.");
-            }
+            JSONObject resultJson = new JSONObject();
+            resultJson.put("accelerators", nodesJsonArray);
+            //return the JSON object containing the "accelerators" array
+            return(resultJson.toString());
 
         } catch (Exception e) {
-            // Handle any exceptions that may occur during the transaction
+            // Handle any exceptions that may occur
             e.printStackTrace();
         } finally {
             // Make sure to close the transaction after processing
             transaction.close();
         }
+        return null;
     }
 
     public String nodeInfo(ServletContext servletContext, String nodeName){
@@ -287,31 +294,52 @@ public class LocalNeo4jDatabase {
         this.managementService = DatabaseManager.getManagementService(dataDirectory);
 
         GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
+// Create a JSON object to store the node information
+        JSONObject nodeInfo = new JSONObject();
+
         try (Transaction transaction = graphDb.beginTx()) {
             Node node = transaction.findNode(Label.label("Accelerator"), "name", nodeName);
             if (node != null) {
                 // Access and store information from the node
                 String nodeAlias = node.getProperty("alias", "").toString();
-                System.out.println(nodeAlias);
+                nodeInfo.put("alias", nodeAlias); // Adding alias property to the JSON object
+
+                // Create a JSON array to store the relationships
+                JSONArray relationshipsArray = new JSONArray();
+
                 // If you want to find relationships as well, you can traverse them
                 Iterable<Relationship> relationships = node.getRelationships();
                 for (Relationship relationship : relationships) {
                     Node startNode = relationship.getStartNode();
-                    String direction = startNode.equals(node) ? "out" : "in";
+                    String direction = startNode.equals(node) ? "outgoing" : "incoming";
                     Object relatedNode = relationship.getOtherNode(node).getProperty("name");
-                    String relationshipType = relationship.getType().name();
-                    Object distance =relationship.getProperty("distance");
-                    System.out.println(direction+" "+relatedNode+" "+relationshipType+" "+distance);
+                    Object distance = relationship.getProperty("distance");
+
+                    // Create a JSON object to store each relationship details
+                    JSONObject relationshipInfo = new JSONObject();
+                    relationshipInfo.put("direction", direction);
+                    relationshipInfo.put("acceleratorID", relatedNode);
+                    relationshipInfo.put("distance", distance);
+
+                    // Add the relationship JSON object to the relationships array
+                    relationshipsArray.put(relationshipInfo);
                 }
+
+                // Add the relationships array to the node information JSON object
+                nodeInfo.put("relationships", relationshipsArray);
+
                 transaction.commit();
             } else {
                 // Handle the case where the node with the given property value is not found
                 System.out.println("Node with name '" + nodeName + "' not found.");
                 transaction.commit();
             }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
 
-        return "S";
+        // Return the JSON object as a string
+        return nodeInfo.toString();
 
     }
     public boolean validNodeByName(ServletContext servletContext, String nodeName) {

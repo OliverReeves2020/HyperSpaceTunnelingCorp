@@ -9,23 +9,20 @@ import jakarta.servlet.annotation.*;
 
 @WebServlet(name = "accelerators", value = "/accelerators")
 public class Accelerators extends HttpServlet {
-    private String message;
+
     //* `GET`: `/accelerators` - returns a list of accelerators with their information
     //* `GET`: `/accelerators/{acceleratorID}` - returns the details of a single accelerator
     //* `GET`: `/accelerators/{acceleratorID}/to/{targetAcceleratorID}` - returns the cheapest route from `acceleratorID` to `targetAcceleratorID`
 
     public void init() {
-        message = "Hello World!";
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-
-
         // Get the request path
         String requestPath = request.getPathInfo();
-        //split into diffrent paths
-        System.out.println(requestPath);
+        String contentType = request.getHeader("Accept");
+
         // `/accelerators` - returns a list of accelerators with their information
         if(requestPath==null){
             System.out.println("null");
@@ -36,8 +33,13 @@ public class Accelerators extends HttpServlet {
         String[] parts = requestPath.substring(1).split("/");
 
         //* `GET`: `/accelerators/{acceleratorID}` - returns the details of a single accelerator
+        if(parts.length==1){
+            LocalNeo4jDatabase db= new LocalNeo4jDatabase();
+            ServletContext context = getServletContext();
+            sender(response,contentType,db.nodeInfo(getServletContext(),parts[0]));
+            return;
 
-
+        }
 
         //* `GET`: `/accelerators/{acceleratorID}/to/{targetAcceleratorID}` - returns the cheapest route from `acceleratorID` to `targetAcceleratorID`
         if(parts.length==3&&parts[1].equals("to")){
@@ -62,20 +64,37 @@ public class Accelerators extends HttpServlet {
 
 
 
-
-
-
-
-
+        System.out.println(contentType);
 
         response.setContentType("text/plain");
 
-        LocalNeo4jDatabase db= new LocalNeo4jDatabase();
-        ServletContext context = getServletContext();
-        db.nodeInfo(getServletContext(),"SOL");
+
+        //db.allNodes(getServletContext());
+        // db.nodeInfo(getServletContext(),"SOL");
 
     }
+
+    public void sender(HttpServletResponse response,String ContentType,String message) throws IOException {
+        //default to json
+        if(ContentType.equals("*/*")||ContentType.equals("application/json")||ContentType.equals("plain/text")){
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            out.println(message);
+            out.close();
+        }
+        else{
+            throw new IOException("request format not supported");
+        }
+
+
+
+
+    }
+
 
     public void destroy() {
     }
+
+
+
 }

@@ -9,6 +9,8 @@ import org.neo4j.graphdb.*;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
@@ -50,19 +52,19 @@ public class LocalNeo4jDatabase {
 
             try (Transaction transaction = graphDb.beginTx()) {
                 // Nodes
-                Node SOL = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "SOL");
-                Node PRX = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "PRX");
-                Node SIR = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "SIR");
-                Node CAS = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "CAS");
-                Node PRO = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "PRO");
-                Node DEN = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "DEN");
-                Node RAN = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "RAN");
-                Node ARC = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ARC");
-                Node FOM = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "FOM");
-                Node ALT = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALT");
-                Node VEG = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "VEG");
-                Node ALD = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALD");
-                Node ALS = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALS");
+                Node SOL = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "SOL","Sol");
+                Node PRX = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "PRX","Proxima");
+                Node SIR = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "SIR","Sirius");
+                Node CAS = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "CAS","Castor");
+                Node PRO = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "PRO","Procyon");
+                Node DEN = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "DEN","Denebula");
+                Node RAN = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "RAN","Ran");
+                Node ARC = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ARC","Arcturus");
+                Node FOM = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "FOM","Fomalhaut");
+                Node ALT = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALT","Altair");
+                Node VEG = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "VEG","Vega");
+                Node ALD = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALD","Aldermain");
+                Node ALS = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALS","Alshain");
 
                 // Relationships
                 createRelationship(transaction, SOL, RAN, "distance", 100);
@@ -188,9 +190,10 @@ public class LocalNeo4jDatabase {
 
             transaction.close();
         }
-        private static Node createNodeWithLabelAndProperties(Transaction transaction, String label, String propertyKey, String propertyValue) {
+        private static Node createNodeWithLabelAndProperties(Transaction transaction, String label, String propertyKey, String propertyValue, String alias) {
             Node node = transaction.createNode(Label.label(label));
             node.setProperty(propertyKey, propertyValue);
+            node.setProperty("alias",alias);
             return node;
         }
 
@@ -212,6 +215,105 @@ public class LocalNeo4jDatabase {
         }
         return null;
     }
+
+    public void allNodes(ServletContext servletContext){
+        // Define the label you want to query
+        Label labelX = Label.label("X");
+
+// Create a list to store the nodes with label "X"
+        List<Node> nodesWithLabelX = new ArrayList<>();
+        String resourcePath = "/data/Solar";
+
+        // Get the real path to the resource directory on the server
+        String directoryPath = servletContext.getRealPath(resourcePath);
+
+        if (directoryPath == null) {
+            // Handle the case where the resource directory is not found
+            throw new RuntimeException("Resource directory not found: " + resourcePath);
+        }
+
+        File dataDirectory = new File(directoryPath);
+
+        this.managementService = DatabaseManager.getManagementService(dataDirectory);
+
+        GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
+        Transaction transaction = graphDb.beginTx();
+
+        try {
+            // Find all nodes with the specified label
+            ResourceIterator<Node> nodeIterator = transaction.findNodes(labelX);
+
+            // Add the nodes to the list
+            while (nodeIterator.hasNext()) {
+                Node node = nodeIterator.next();
+                nodesWithLabelX.add(node);
+            }
+
+            // Make sure to close the iterator
+            nodeIterator.close();
+
+            // Process the nodes or return the list as needed
+            // For example, you can iterate through the list and perform actions on each node:
+            for (Node node : nodesWithLabelX) {
+                String nodeName = node.getProperty("name").toString();
+                // Access other properties or perform actions with the node as needed
+                // ...
+                System.out.println("Node with label 'X' and name '" + nodeName + "' found.");
+            }
+
+        } catch (Exception e) {
+            // Handle any exceptions that may occur during the transaction
+            e.printStackTrace();
+        } finally {
+            // Make sure to close the transaction after processing
+            transaction.close();
+        }
+    }
+
+    public String nodeInfo(ServletContext servletContext, String nodeName){
+        // Define the relative path to the data directory inside resources
+        String resourcePath = "/data/Solar";
+
+        // Get the real path to the resource directory on the server
+        String directoryPath = servletContext.getRealPath(resourcePath);
+
+        if (directoryPath == null) {
+            // Handle the case where the resource directory is not found
+            throw new RuntimeException("Resource directory not found: " + resourcePath);
+        }
+
+        File dataDirectory = new File(directoryPath);
+
+        this.managementService = DatabaseManager.getManagementService(dataDirectory);
+
+        GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
+        try (Transaction transaction = graphDb.beginTx()) {
+            Node node = transaction.findNode(Label.label("Accelerator"), "name", nodeName);
+            if (node != null) {
+                // Access and store information from the node
+                String nodeAlias = node.getProperty("alias", "").toString();
+                System.out.println(nodeAlias);
+                // If you want to find relationships as well, you can traverse them
+                Iterable<Relationship> relationships = node.getRelationships();
+                for (Relationship relationship : relationships) {
+                    Node startNode = relationship.getStartNode();
+                    String direction = startNode.equals(node) ? "out" : "in";
+                    Object relatedNode = relationship.getOtherNode(node).getProperty("name");
+                    String relationshipType = relationship.getType().name();
+                    Object distance =relationship.getProperty("distance");
+                    System.out.println(direction+" "+relatedNode+" "+relationshipType+" "+distance);
+                }
+                transaction.commit();
+            } else {
+                // Handle the case where the node with the given property value is not found
+                System.out.println("Node with name '" + nodeName + "' not found.");
+                transaction.commit();
+            }
+        }
+
+        return "S";
+
+    }
     public boolean validNodeByName(ServletContext servletContext, String nodeName) {
 
         // Define the relative path to the data directory inside resources
@@ -232,13 +334,12 @@ public class LocalNeo4jDatabase {
         GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
 
         //memory leak caused by transaction needs to be looked into
-        Transaction transaction = graphDb.beginTx();
-        Result result = transaction.execute("MATCH (n {name: $nodeName}) RETURN n", Map.of("nodeName", nodeName));
+        try (Transaction transaction = graphDb.beginTx()) {
+            Result result = transaction.execute("MATCH (n {name: $nodeName}) RETURN n", Map.of("nodeName", nodeName));
+            transaction.close();
+            return result.hasNext();
+        }
 
-        boolean nodeFound = result.hasNext();
-        transaction.terminate(); // Close the transaction before returning.
-
-        return nodeFound;
     }
 
     }

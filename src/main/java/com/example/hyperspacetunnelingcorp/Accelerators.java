@@ -72,7 +72,7 @@ public class Accelerators extends HttpServlet {
 
         LocalNeo4jDatabase db= new LocalNeo4jDatabase();
         ServletContext context = getServletContext();
-        db.findCheapestPath(context,"ARC","SOL");
+        db.nodeInfo(getServletContext(),"SOL");
 
     }
 

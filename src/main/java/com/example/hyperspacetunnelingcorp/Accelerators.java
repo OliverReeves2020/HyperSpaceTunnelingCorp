@@ -45,8 +45,8 @@ public class Accelerators extends HttpServlet {
 
         //* `GET`: `/accelerators/{acceleratorID}/to/{targetAcceleratorID}` - returns the cheapest route from `acceleratorID` to `targetAcceleratorID`
         if(parts.length==3&&parts[1].equals("to")){
-            String startAccelerator = parts[0].toString();
-            String endAccelerator = parts[2].toString();
+            String startAccelerator = parts[0];
+            String endAccelerator = parts[2];
 
 
            if(db.validNodeByName(context,startAccelerator)&& db.validNodeByName(context,endAccelerator)){
@@ -58,7 +58,7 @@ public class Accelerators extends HttpServlet {
 
 
            }else{
-               response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parmaters provided in the path.");
+               response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parameters provided in the path.");
            }
 
 

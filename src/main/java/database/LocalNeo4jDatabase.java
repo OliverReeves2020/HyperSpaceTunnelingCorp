@@ -51,67 +51,67 @@ public class LocalNeo4jDatabase {
 
             try (Transaction transaction = graphDb.beginTx()) {
                 // Nodes
-                Node SOL = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "SOL","Sol");
-                Node PRX = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "PRX","Proxima");
-                Node SIR = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "SIR","Sirius");
-                Node CAS = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "CAS","Castor");
-                Node PRO = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "PRO","Procyon");
-                Node DEN = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "DEN","Denebula");
-                Node RAN = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "RAN","Ran");
-                Node ARC = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ARC","Arcturus");
-                Node FOM = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "FOM","Fomalhaut");
-                Node ALT = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALT","Altair");
-                Node VEG = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "VEG","Vega");
-                Node ALD = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALD","Aldermain");
-                Node ALS = createNodeWithLabelAndProperties(transaction, "Accelerator", "name", "ALS","Alshain");
+                Node SOL = createNodeWithLabelAndProperties(transaction, "SOL","Sol");
+                Node PRX = createNodeWithLabelAndProperties(transaction, "PRX","Proxima");
+                Node SIR = createNodeWithLabelAndProperties(transaction, "SIR","Sirius");
+                Node CAS = createNodeWithLabelAndProperties(transaction, "CAS","Castor");
+                Node PRO = createNodeWithLabelAndProperties(transaction, "PRO","Procyon");
+                Node DEN = createNodeWithLabelAndProperties(transaction, "DEN","Denebula");
+                Node RAN = createNodeWithLabelAndProperties(transaction, "RAN","Ran");
+                Node ARC = createNodeWithLabelAndProperties(transaction, "ARC","Arcturus");
+                Node FOM = createNodeWithLabelAndProperties(transaction, "FOM","Fomalhaut");
+                Node ALT = createNodeWithLabelAndProperties(transaction, "ALT","Altair");
+                Node VEG = createNodeWithLabelAndProperties(transaction, "VEG","Vega");
+                Node ALD = createNodeWithLabelAndProperties(transaction, "ALD","Aldermain");
+                Node ALS = createNodeWithLabelAndProperties(transaction, "ALS","Alshain");
 
                 // Relationships
-                createRelationship(transaction, SOL, RAN, "distance", 100);
-                createRelationship(transaction, SOL, PRX, "distance", 90);
-                createRelationship(transaction, SOL, SIR, "distance", 100);
-                createRelationship(transaction, SOL, ARC, "distance", 200);
-                createRelationship(transaction, SOL, ALD, "distance", 250);
+                createRelationship(SOL, RAN, 100);
+                createRelationship(SOL, PRX, 90);
+                createRelationship(SOL, SIR, 100);
+                createRelationship(SOL, ARC, 200);
+                createRelationship(SOL, ALD, 250);
 
-                createRelationship(transaction, PRX, SOL, "distance", 90);
-                createRelationship(transaction, PRX, SIR, "distance", 100);
-                createRelationship(transaction, PRX, ALT, "distance", 150);
+                createRelationship(PRX, SOL, 90);
+                createRelationship(PRX, SIR, 100);
+                createRelationship(PRX, ALT, 150);
 
-                createRelationship(transaction, SIR, SOL, "distance", 80);
-                createRelationship(transaction, SIR, PRX, "distance", 10);
-                createRelationship(transaction, SIR, CAS, "distance", 200);
+                createRelationship(SIR, SOL, 80);
+                createRelationship(SIR, PRX, 10);
+                createRelationship(SIR, CAS, 200);
 
-                createRelationship(transaction, CAS, SIR, "distance", 200);
-                createRelationship(transaction, CAS, PRO, "distance", 120);
+                createRelationship(CAS, SIR, 200);
+                createRelationship(CAS, PRO, 120);
 
-                createRelationship(transaction, PRO, CAS, "distance", 80);
+                createRelationship(PRO, CAS, 80);
 
-                createRelationship(transaction, DEN, PRO, "distance", 5);
-                createRelationship(transaction, DEN, ARC, "distance", 2);
-                createRelationship(transaction, DEN, FOM, "distance", 8);
-                createRelationship(transaction, DEN, RAN, "distance", 100);
-                createRelationship(transaction, DEN, ALD, "distance", 3);
+                createRelationship(DEN, PRO, 5);
+                createRelationship(DEN, ARC, 2);
+                createRelationship(DEN, FOM, 8);
+                createRelationship(DEN, RAN, 100);
+                createRelationship(DEN, ALD, 3);
 
-                createRelationship(transaction, RAN, SOL, "distance", 100);
+                createRelationship(RAN, SOL, 100);
 
-                createRelationship(transaction, ARC, SOL, "distance", 500);
-                createRelationship(transaction, ARC, DEN, "distance", 120);
+                createRelationship(ARC, SOL, 500);
+                createRelationship(ARC, DEN, 120);
 
-                createRelationship(transaction, FOM, PRX, "distance", 10);
-                createRelationship(transaction, FOM, DEN, "distance", 20);
-                createRelationship(transaction, FOM, ALS, "distance", 9);
+                createRelationship(FOM, PRX, 10);
+                createRelationship(FOM, DEN, 20);
+                createRelationship(FOM, ALS, 9);
 
-                createRelationship(transaction, ALT, FOM, "distance", 140);
-                createRelationship(transaction, ALT, VEG, "distance", 220);
+                createRelationship(ALT, FOM, 140);
+                createRelationship(ALT, VEG, 220);
 
-                createRelationship(transaction, VEG, ARC, "distance", 220);
-                createRelationship(transaction, VEG, ALD, "distance", 580);
+                createRelationship(VEG, ARC, 220);
+                createRelationship(VEG, ALD, 580);
 
-                createRelationship(transaction, ALD, SOL, "distance", 200);
-                createRelationship(transaction, ALD, ALS, "distance", 160);
-                createRelationship(transaction, ALD, VEG, "distance", 320);
+                createRelationship(ALD, SOL, 200);
+                createRelationship(ALD, ALS, 160);
+                createRelationship(ALD, VEG, 320);
 
-                createRelationship(transaction, ALS, ALT, "distance", 1);
-                createRelationship(transaction, ALS, ALD, "distance", 1);
+                createRelationship(ALS, ALT, 1);
+                createRelationship(ALS, ALD, 1);
 
 
                 System.out.println("finished");
@@ -196,15 +196,15 @@ public class LocalNeo4jDatabase {
 
             return result.toString();
         }
-        private static Node createNodeWithLabelAndProperties(Transaction transaction, String label, String propertyKey, String propertyValue, String alias) {
-            Node node = transaction.createNode(Label.label(label));
-            node.setProperty(propertyKey, propertyValue);
+        private static Node createNodeWithLabelAndProperties(Transaction transaction, String propertyValue, String alias) {
+            Node node = transaction.createNode(Label.label("Accelerator"));
+            node.setProperty("name", propertyValue);
             node.setProperty("alias",alias);
             return node;
         }
 
-        private static Relationship createRelationship(Transaction transaction, Node fromNode, Node toNode, String relationshipType, int distance) {
-            RelationshipType type = RelationshipType.withName(relationshipType);
+        private static Relationship createRelationship(Node fromNode, Node toNode, int distance) {
+            RelationshipType type = RelationshipType.withName("distance");
             Relationship relationship = fromNode.createRelationshipTo(toNode, type);
             relationship.setProperty("distance", distance);
             return relationship;
@@ -216,7 +216,6 @@ public class LocalNeo4jDatabase {
         Label labelX = Label.label("Accelerator");
 
 // Create a list to store the nodes with label "X"
-        List<Node> nodesWithLabelX = new ArrayList<>();
         String resourcePath = "/data/Solar";
 
         // Get the real path to the resource directory on the server
@@ -242,6 +241,7 @@ public class LocalNeo4jDatabase {
             JSONArray nodesJsonArray = new JSONArray();
 
             // Add the nodes to the list
+            List<Node> nodesWithLabelX = new ArrayList<>();
             while (nodeIterator.hasNext()) {
                 Node node = nodeIterator.next();
                 nodesWithLabelX.add(node);
@@ -360,7 +360,7 @@ public class LocalNeo4jDatabase {
         //memory leak caused by transaction needs to be looked into
         try (Transaction transaction = graphDb.beginTx()) {
 
-            Boolean result = (transaction.findNode(Label.label("Accelerator"), "name", nodeName))==null? false:true;
+            boolean result = (transaction.findNode(Label.label("Accelerator"), "name", nodeName))==null? false:true;
             transaction.close();
             return result;
         }

@@ -2,13 +2,12 @@ package listeners;
 
 import database.DatabaseManager;
 import database.LocalNeo4jDatabase;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import org.neo4j.dbms.api.DatabaseManagementService;
 
 import java.io.File;
-
-import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
 
 public class ServerStart implements ServletContextListener {
 
@@ -23,7 +22,7 @@ public class ServerStart implements ServletContextListener {
         // Define the relative path to the data directory inside resources
         String resourcePath = "/data/Solar";
         // Get the real path to the resource directory on the server
-        String directoryPath = context.getRealPath(resourcePath);;
+        String directoryPath = context.getRealPath(resourcePath);
 // Get the real path to the resource directory on the server
         File dataDirectory = new File(directoryPath);
         this.managementService = DatabaseManager.getManagementService(dataDirectory);

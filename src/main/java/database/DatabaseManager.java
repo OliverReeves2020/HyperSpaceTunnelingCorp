@@ -5,7 +5,6 @@ import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.time.Duration;
 
 public class DatabaseManager {

@@ -27,9 +27,7 @@ public class Accelerators extends HttpServlet {
         ServletContext context = getServletContext();
         // `/accelerators` - returns a list of accelerators with their information
         if(requestPath==null){
-            System.out.println("null");
             sender(response,contentType,db.allNodes(getServletContext()));
-
             return;
         }
 

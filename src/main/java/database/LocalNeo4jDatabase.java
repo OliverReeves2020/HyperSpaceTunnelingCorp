@@ -142,7 +142,7 @@ public class LocalNeo4jDatabase {
         }
 
 
-        public void findCheapestPath(ServletContext servletContext , String startNodeName,String endNodeName){
+        public String findCheapestPath(ServletContext servletContext , String startNodeName, String endNodeName) throws JSONException {
 
 
             // Define the relative path to the data directory inside resources
@@ -167,27 +167,34 @@ public class LocalNeo4jDatabase {
 
 
 
-            //check that nodes exist
+            JSONObject result = new JSONObject();
 
-            Node nodeA = findNodeByName(transaction, startNodeName);
-            Node nodeB = findNodeByName(transaction, endNodeName);
+            // check that nodes exist
+            Node nodeA = transaction.findNode(Label.label("Accelerator"), "name", startNodeName);
+            Node nodeB = transaction.findNode(Label.label("Accelerator"), "name", endNodeName);
 
-            PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra( new BasicEvaluationContext( transaction, graphDb ),
-                    PathExpanders.forTypeAndDirection( RelationshipType.withName("distance"), Direction.OUTGOING), "distance" );
+            PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(
+                    new BasicEvaluationContext(transaction, graphDb),
+                    PathExpanders.forTypeAndDirection(RelationshipType.withName("distance"), Direction.OUTGOING),
+                    "distance"
+            );
 
-            WeightedPath path = finder.findSinglePath( nodeA, nodeB );
+            WeightedPath path = finder.findSinglePath(nodeA, nodeB);
 
-            // Get the weight for the found path
+            // Extract the node names to create the path array
+            JSONArray pathArray = new JSONArray();
             for (Node node : path.nodes()) {
                 String nodeName = (String) node.getProperty("name");
-
-
-                // Assuming the node has a property called "name" to store its name
-                System.out.println(nodeName);
+                pathArray.put(nodeName);
             }
-            System.out.println(path.weight());
+
+            // Add the weight and path array to the JSON result
+            result.put("weight", path.weight());
+            result.put("path", pathArray);
 
             transaction.close();
+
+            return result.toString();
         }
         private static Node createNodeWithLabelAndProperties(Transaction transaction, String label, String propertyKey, String propertyValue, String alias) {
             Node node = transaction.createNode(Label.label(label));
@@ -203,17 +210,6 @@ public class LocalNeo4jDatabase {
             return relationship;
         }
 
-
-
-    public static Node findNodeByName(Transaction transaction, String nodeName) {
-        Result result = transaction.execute("MATCH (n {name: $nodeName}) RETURN n", Map.of("nodeName", nodeName));
-        if (result.hasNext()) {
-            Map<String, Object> row = result.next();
-
-            return (Node) row.get("n");
-        }
-        return null;
-    }
 
     public String allNodes(ServletContext servletContext){
         // Define the label you want to query
@@ -363,10 +359,12 @@ public class LocalNeo4jDatabase {
 
         //memory leak caused by transaction needs to be looked into
         try (Transaction transaction = graphDb.beginTx()) {
-            Result result = transaction.execute("MATCH (n {name: $nodeName}) RETURN n", Map.of("nodeName", nodeName));
+
+            Boolean result = (transaction.findNode(Label.label("Accelerator"), "name", nodeName))==null? false:true;
             transaction.close();
-            return result.hasNext();
+            return result;
         }
+
 
     }
 

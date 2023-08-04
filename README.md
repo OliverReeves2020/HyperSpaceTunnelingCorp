@@ -1,4 +1,13 @@
 
+
+# Implementation
+ocker Image
+To facilitate the deployment of our task, we have prepared a Docker image that contains all the necessary components and dependencies. You can easily run our application using this Docker image, ensuring consistency and ease of setup across different environments. The Docker image can be accessed and downloaded from the following location:
+
+For a comprehensive understanding of our API and its endpoints, we have prepared detailed documentation. This documentation provides insights into how to interact with our service and use its functionalities effectively. You can access the API documentation collection by visiting the following link:
+
+
+
 # Brief
 **Hyperspace Tunneling Corp** manages a system-to-system web of hyperspace accelerators that spans the United Terran Systems. They charge a fee to their users in order to use their network but they want to expand their business.
 
@@ -102,20 +111,4 @@ The API should expose, at least, the following endpoints:
 * `GET`: `/accelerators/{acceleratorID}/to/{targetAcceleratorID}` - returns the cheapest route from `acceleratorID` to `targetAcceleratorID`
 
 These endpoints should be public.
-
-### Expectations
-* A git repository with the solution
-    * Application code
-        * Use any programming language you like (unless stated otherwise)
-    * API documentation - e.g. Swagger, Postman collection
-    * Any tests
-    * Any CI/CD configuration - e.g. github actions
-    * Any infrastructure-like config - e.g. Dockerfile(s)
-    * Any supporting scripts to generate, package, run, etc...
-* A dockerhub image with the solution and instructions on how to run it (and/or a docker-compose file)
-    * Optionally, feel free to host this for us somewhere as well.
-
-# notes
-* for the cheapest **Spaceflight** we can use a traversal [algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
-* host the rest on tomcat wrapped in docer image-> could deploy on azure
 

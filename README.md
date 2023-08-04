@@ -7,6 +7,8 @@ https://hub.docker.com/repository/docker/chunkyweeb/hyperspace/general
 For a comprehensive understanding of our API and its endpoints, we have prepared detailed documentation. This documentation provides insights into how to interact with our service and use its functionalities effectively. You can access the API documentation collection by visiting the following link: 
 https://documenter.getpostman.com/view/28917965/2s9XxyQYJ3
 
+a hosted image is available use https://hyperspacetunnellingcorp.azurewebsites.net/ instead of local host as documented in the azure collection.
+
 
 
 # Brief

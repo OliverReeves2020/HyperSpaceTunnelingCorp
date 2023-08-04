@@ -1,10 +1,11 @@
 
 
 # Implementation
-ocker Image
-To facilitate the deployment of our task, we have prepared a Docker image that contains all the necessary components and dependencies. You can easily run our application using this Docker image, ensuring consistency and ease of setup across different environments. The Docker image can be accessed and downloaded from the following location:
+we have prepared a Docker image that contains all the necessary components and dependencies. You can easily run our application using this Docker image, ensuring consistency and ease of setup across different environments. The Docker image can be accessed and downloaded from the following location:
+https://hub.docker.com/repository/docker/chunkyweeb/hyperspace/general
 
-For a comprehensive understanding of our API and its endpoints, we have prepared detailed documentation. This documentation provides insights into how to interact with our service and use its functionalities effectively. You can access the API documentation collection by visiting the following link:
+For a comprehensive understanding of our API and its endpoints, we have prepared detailed documentation. This documentation provides insights into how to interact with our service and use its functionalities effectively. You can access the API documentation collection by visiting the following link: 
+https://documenter.getpostman.com/view/28917965/2s9XxyQYJ3
 
 
 

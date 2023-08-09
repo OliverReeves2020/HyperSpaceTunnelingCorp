@@ -1,7 +1,6 @@
 package errorhandler;
 
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,17 +12,13 @@ import java.io.PrintWriter;
 @WebServlet(name = "ErrorHandlerServlet", value = "/ErrorHandlerServlet")
 public class ErrorHandler extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         // get all details about exceptions
         Throwable throwable = (Throwable) request.getAttribute("jakarta.servlet.error.exception");
         Integer statusCode = (Integer) request.getAttribute("jakarta.servlet.error.status_code");
-        String servletName = (String) request.getAttribute("jakarta.servlet.error.servlet_name");
         String message = (String) request.getAttribute("jakarta.servlet.error.message");
 
-        if (servletName == null) {
-            servletName = "Unknown";
-        }
         if (message == null) {
             message = "Unknown";
         }
@@ -42,7 +37,7 @@ public class ErrorHandler extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         doGet(request, response);
     }
 }

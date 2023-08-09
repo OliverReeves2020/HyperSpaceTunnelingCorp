@@ -12,11 +12,12 @@ import java.io.File;
 public class ServerStart implements ServletContextListener {
 
     private DatabaseManagementService managementService;
+
     @Override
     public void contextInitialized(ServletContextEvent event) {
         // Initialization code here
         System.out.println("Web application initialized.");
-        LocalNeo4jDatabase db= new LocalNeo4jDatabase();
+        LocalNeo4jDatabase db = new LocalNeo4jDatabase();
         ServletContext context = event.getServletContext();
         db.startup(context);
         // Define the relative path to the data directory inside resources

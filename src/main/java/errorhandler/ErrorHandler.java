@@ -19,19 +19,19 @@ public class ErrorHandler extends HttpServlet {
         Throwable throwable = (Throwable) request.getAttribute("jakarta.servlet.error.exception");
         Integer statusCode = (Integer) request.getAttribute("jakarta.servlet.error.status_code");
         String servletName = (String) request.getAttribute("jakarta.servlet.error.servlet_name");
-        String message=(String) request.getAttribute("jakarta.servlet.error.message");
+        String message = (String) request.getAttribute("jakarta.servlet.error.message");
 
         if (servletName == null) {
             servletName = "Unknown";
         }
-        if(message==null){
-            message="Unknown";
+        if (message == null) {
+            message = "Unknown";
         }
 
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        String mes= "{\"error\":\"" +statusCode+"\"," + "\"message\":\"" + message + "\"," + "\"exception\":\"" + throwable + "\"}";
+        String mes = "{\"error\":\"" + statusCode + "\"," + "\"message\":\"" + message + "\"," + "\"exception\":\"" + throwable + "\"}";
         //set response code
         response.setStatus(statusCode);
         out.println(mes);

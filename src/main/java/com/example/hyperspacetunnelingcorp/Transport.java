@@ -10,12 +10,9 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 
-@WebServlet(name="transport",value="/transport")
+@WebServlet(name = "transport", value = "/transport")
 public class Transport extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -25,11 +22,7 @@ public class Transport extends HttpServlet {
         String contentType = req.getHeader("Accept");
 
 
-
-
-
-
-        if(requestPath==null){
+        if (requestPath == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "path is not complete");
             return;
         }
@@ -37,7 +30,7 @@ public class Transport extends HttpServlet {
         String[] parts = requestPath.substring(1).split("/");
 
         //GET: /transport/options
-        if(parts.length==1&&parts[0].equals("options")){
+        if (parts.length == 1 && parts[0].equals("options")) {
 
             String jsonString = "{\n" +
                     "  \"Personal Transport\": {\n" +
@@ -51,16 +44,14 @@ public class Transport extends HttpServlet {
                     "  }\n" +
                     "}";
 
-            sender(resp,contentType,jsonString);
-            return;
+            sender(resp, contentType, jsonString);
 
-        }
-        else if(parts.length==1){
+        } else if (parts.length == 1) {
             double distance;
             try {
                 distance = Double.parseDouble(parts[0]);
                 //check if distance is valid
-                if(distance<=0){
+                if (distance <= 0) {
                     throw new NumberFormatException();
                 }
             } catch (NumberFormatException e) {
@@ -68,10 +59,10 @@ public class Transport extends HttpServlet {
                 return;
             }
             //extract info from path
-            String passengers=req.getParameter("passengers");
-            String parking=req.getParameter("parking");
+            String passengers = req.getParameter("passengers");
+            String parking = req.getParameter("parking");
 
-            if(passengers==null||parking==null){
+            if (passengers == null || parking == null) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing or no parameters found");
                 return;
             }
@@ -82,43 +73,42 @@ public class Transport extends HttpServlet {
             try {
                 numberOfPeople = Integer.parseInt(passengers);
                 daysParked = Integer.parseInt(parking);
-                if(numberOfPeople<=0||daysParked<0){throw new NumberFormatException();}
+                if (numberOfPeople <= 0 || daysParked < 0) {
+                    throw new NumberFormatException();
+                }
 
             } catch (NumberFormatException e) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parmaters provided in the path.");
                 return;
             }
-            try{
-            double personal = JourneyCostCalculator.calculatePersonalTransportCost(distance, numberOfPeople, daysParked);
-            double htc = JourneyCostCalculator.calculateHTCTransportCost(distance, numberOfPeople);
-            JSONObject tosend = new JSONObject();
+            try {
+                double personal = JourneyCostCalculator.calculatePersonalTransportCost(distance, numberOfPeople, daysParked);
+                double htc = JourneyCostCalculator.calculateHTCTransportCost(distance, numberOfPeople);
+                JSONObject tosend = new JSONObject();
 
-            System.out.println(personal);
-            System.out.println(htc);
+                System.out.println(personal);
+                System.out.println(htc);
 
-            if (htc > personal) {
-                // personal is cheaper so return personal
-                tosend.put("personal", personal);
-            } else if (personal > htc) {
-                // htc is cheaper
-                tosend.put("htc", htc);
-            } else {
-                // both are equal so return both
-                tosend.put("htc", htc);
-                tosend.put("personal", personal);
-            }
+                if (htc > personal) {
+                    // personal is cheaper so return personal
+                    tosend.put("personal", personal);
+                } else if (personal > htc) {
+                    // htc is cheaper
+                    tosend.put("htc", htc);
+                } else {
+                    // both are equal so return both
+                    tosend.put("htc", htc);
+                    tosend.put("personal", personal);
+                }
 
 
-                sender(resp,contentType,tosend.toString());
+                sender(resp, contentType, tosend.toString());
             } catch (JSONException e) {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST,"internal issue");
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "internal issue");
             }
 
 
         }
-
-
-
 
 
         //* `GET`: `/transport/{distance}?passengers={number}&parking={days}`
@@ -128,23 +118,12 @@ public class Transport extends HttpServlet {
         // Convert the parameter to the appropriate data type
 
 
-
     }
 
 
-    public void sender(HttpServletResponse response,String ContentType,String message) throws IOException {
+    public void sender(HttpServletResponse response, String ContentType, String message) throws IOException {
         //default to json
-        if(ContentType.equals("*/*")||ContentType.equals("application/json")||ContentType.equals("plain/text")){
-            response.setContentType("application/json");
-            PrintWriter out = response.getWriter();
-            out.println(message);
-            out.close();
-        }
-        else{
-            throw new IOException("request format not supported");
-        }
-
-
+        Accelerators.jsonResponse(response, ContentType, message);
 
 
     }

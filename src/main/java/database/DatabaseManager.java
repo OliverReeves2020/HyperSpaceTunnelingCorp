@@ -13,10 +13,7 @@ public class DatabaseManager {
     public static synchronized DatabaseManagementService getManagementService(File dataDirectory) {
         if (managementService == null) {
 
-            managementService = new DatabaseManagementServiceBuilder(dataDirectory.toPath())
-                    .setConfig(GraphDatabaseSettings.transaction_timeout, Duration.ofSeconds(60))
-                    .setConfig(GraphDatabaseSettings.preallocate_logical_logs, true)
-                    .build();
+            managementService = new DatabaseManagementServiceBuilder(dataDirectory.toPath()).setConfig(GraphDatabaseSettings.transaction_timeout, Duration.ofSeconds(60)).setConfig(GraphDatabaseSettings.preallocate_logical_logs, true).build();
         }
         return managementService;
     }

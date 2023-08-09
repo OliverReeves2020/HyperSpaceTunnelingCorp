@@ -23,7 +23,6 @@ public class ErrorHandler extends HttpServlet {
             message = "Unknown";
         }
 
-
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         String mes = "{\"error\":\"" + statusCode + "\"," + "\"message\":\"" + message + "\"," + "\"exception\":\"" + throwable + "\"}";

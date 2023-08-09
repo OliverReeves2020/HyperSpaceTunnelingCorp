@@ -60,7 +60,6 @@ public class Accelerators extends HttpServlet {
             String startAccelerator = parts[0];
             String endAccelerator = parts[2];
 
-
             if (db.validNodeByName(context, startAccelerator) && db.validNodeByName(context, endAccelerator)) {
                 try {
                     sender(response, contentType, db.findCheapestPath(context, startAccelerator, endAccelerator));

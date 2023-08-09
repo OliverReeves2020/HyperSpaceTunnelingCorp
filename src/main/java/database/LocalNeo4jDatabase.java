@@ -25,7 +25,6 @@ public class LocalNeo4jDatabase {
 
     public static void main(String[] args) {
 
-
     }
 
     private static Node createNodeWithLabelAndProperties(Transaction transaction, String propertyValue, String alias) {
@@ -64,7 +63,6 @@ public class LocalNeo4jDatabase {
         this.managementService = DatabaseManager.getManagementService(dataDirectory);
 
         GraphDatabaseService graphDb = managementService.database(DEFAULT_DATABASE_NAME);
-
 
         try (Transaction transaction = graphDb.beginTx()) {
             // Nodes
@@ -130,7 +128,6 @@ public class LocalNeo4jDatabase {
             createRelationship(ALS, ALT, 1);
             createRelationship(ALS, ALD, 1);
 
-
             System.out.println("finished");
 
             Result labelsResult = transaction.execute("CALL db.labels() YIELD label");
@@ -158,26 +155,16 @@ public class LocalNeo4jDatabase {
 
     public String findCheapestPath(ServletContext servletContext, String startNodeName, String endNodeName) throws JSONException {
 
-
         // Define the relative path to the data directory inside resources
         GraphDatabaseService graphDb = getGraphDatabaseService(servletContext);
-
-
         Transaction transaction = graphDb.beginTx();
-
-
         JSONObject result = new JSONObject();
 
         // check that nodes exist
         Node nodeA = transaction.findNode(Label.label("Accelerator"), "name", startNodeName);
         Node nodeB = transaction.findNode(Label.label("Accelerator"), "name", endNodeName);
 
-        PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(
-                new BasicEvaluationContext(transaction, graphDb),
-                PathExpanders.forTypeAndDirection(RelationshipType.withName("distance"), Direction.OUTGOING),
-                "distance"
-        );
-
+        PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(new BasicEvaluationContext(transaction, graphDb), PathExpanders.forTypeAndDirection(RelationshipType.withName("distance"), Direction.OUTGOING), "distance");
         WeightedPath path = finder.findSinglePath(nodeA, nodeB);
 
         // Extract the node names to create the path array
@@ -200,7 +187,7 @@ public class LocalNeo4jDatabase {
         // Define the label you want to query
         Label labelX = Label.label("Accelerator");
 
-// Create a list to store the nodes with label "X"
+        // Create a list to store the nodes with label "X"
         GraphDatabaseService graphDb = getGraphDatabaseService(servletContext);
 
         try (Transaction transaction = graphDb.beginTx()) {
@@ -244,7 +231,7 @@ public class LocalNeo4jDatabase {
     public String nodeInfo(ServletContext servletContext, String nodeName) {
         // Define the relative path to the data directory inside resources
         GraphDatabaseService graphDb = getGraphDatabaseService(servletContext);
-// Create a JSON object to store the node information
+        // Create a JSON object to store the node information
         JSONObject nodeInfo = new JSONObject();
 
         try (Transaction transaction = graphDb.beginTx()) {

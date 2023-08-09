@@ -24,7 +24,7 @@ public class ServerStart implements ServletContextListener {
         String resourcePath = "/data/Solar";
         // Get the real path to the resource directory on the server
         String directoryPath = context.getRealPath(resourcePath);
-// Get the real path to the resource directory on the server
+        // Get the real path to the resource directory on the server
         File dataDirectory = new File(directoryPath);
         this.managementService = DatabaseManager.getManagementService(dataDirectory);
 

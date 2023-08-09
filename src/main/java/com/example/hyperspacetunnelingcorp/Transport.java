@@ -21,7 +21,6 @@ public class Transport extends HttpServlet {
         String requestPath = req.getPathInfo();
         String contentType = req.getHeader("Accept");
 
-
         if (requestPath == null) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "path is not complete");
             return;
@@ -32,17 +31,7 @@ public class Transport extends HttpServlet {
         //GET: /transport/options
         if (parts.length == 1 && parts[0].equals("options")) {
 
-            String jsonString = "{\n" +
-                    "  \"Personal Transport\": {\n" +
-                    "    \"cost\": \"£0.30/[AU](standard fuel cost)\",\n" +
-                    "    \"storage_cost\": \"£5 per day for ship storage at the accelerator\",\n" +
-                    "    \"capacity\": \"fits up to 4 people\"\n" +
-                    "  },\n" +
-                    "  \"HTC Transport\": {\n" +
-                    "    \"cost\": \"£0.45/[AU]\",\n" +
-                    "    \"capacity\": \"fits up to 5 people\"\n" +
-                    "  }\n" +
-                    "}";
+            String jsonString = "{\n" + "  \"Personal Transport\": {\n" + "    \"cost\": \"£0.30/[AU](standard fuel cost)\",\n" + "    \"storage_cost\": \"£5 per day for ship storage at the accelerator\",\n" + "    \"capacity\": \"fits up to 4 people\"\n" + "  },\n" + "  \"HTC Transport\": {\n" + "    \"cost\": \"£0.45/[AU]\",\n" + "    \"capacity\": \"fits up to 5 people\"\n" + "  }\n" + "}";
 
             sender(resp, contentType, jsonString);
 
@@ -101,7 +90,6 @@ public class Transport extends HttpServlet {
                     tosend.put("personal", personal);
                 }
 
-
                 sender(resp, contentType, tosend.toString());
             } catch (JSONException e) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "internal issue");
@@ -110,13 +98,11 @@ public class Transport extends HttpServlet {
 
         }
 
-
         //* `GET`: `/transport/{distance}?passengers={number}&parking={days}`
         // - returns the cheapest vehicle to use (and the cost of the journey) for the given `distance` (in AUs), `number` or passengers and `days` of parking
         //  * Accelerators typically sit above the star, so if you're on Earth and want to travel to the Sol accelerator, the distance would be ~1AU.
 
         // Convert the parameter to the appropriate data type
-
 
     }
 
